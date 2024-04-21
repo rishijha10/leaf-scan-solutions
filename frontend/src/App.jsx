@@ -1,14 +1,13 @@
-
 import "./App.css";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 function App() {
-
-  return (
-    <>
-      <Login/>
-    </>
-  );
+  const router = createBrowserRouter([
+    { path: "/", element: <Login /> },
+    { path: "/dashboard", element: <Dashboard /> },
+  ]);
+  return <RouterProvider router={router} />;
 }
 
 export default App;
