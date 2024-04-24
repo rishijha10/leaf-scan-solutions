@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { ClipLoader } from "react-spinners";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ const Login = () => {
           // Signed up
           const user = userCredential.user;
           console.log(user);
-          navigate("/dashboard");
+          navigate("/");
           // ...
         })
         .catch((error) => {
@@ -40,7 +41,7 @@ const Login = () => {
           const user = userCredential.user;
           console.log(user);
 
-          navigate("/dashboard");
+          navigate("/");
           // ...
         })
         .catch((error) => {
@@ -90,13 +91,19 @@ const Login = () => {
             <button
               disabled={loading}
               type="submit"
-              className="w-full bg-gray-200 text-gray-700 hover:text-white hover:bg-gray-700 font-semibold py-2 px-4 rounded transition-colors duration-300"
+              className="w-full bg-gray-700 text-white h-[44px] hover:text-white hover:bg-gray-700 font-semibold py-2 px-4 rounded transition-colors duration-300"
             >
-              {authMode === "login" ? "Login" : "Sign Up"}
+              {loading ? (
+                <ClipLoader color="#fff" size={25} />
+              ) : authMode === "login" ? (
+                "Login"
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
 
-          <NavLink to={authMode === "login" ? "/?mode=signUp" : "/?mode=login"}>
+          <NavLink to={authMode === "login" ? "?mode=signUp" : "?mode=login"}>
             <button
               disabled={loading}
               onClick={() =>

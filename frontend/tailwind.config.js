@@ -29,6 +29,11 @@ export default {
         s360: { max: "360px" },
         s361: { max: "325px" },
       },
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
+        bakbak: ["Bakbak One", "sans-serif"],
+        pop: ["Poppins", "sans-serif"],
+      },
     },
   },
   plugins: [],
