@@ -19,7 +19,7 @@ export function formatDiseaseName(name) {
 const MyPlants = () => {
   const { user } = useContext(MainContext);
   const [userPlants, setUserPlants] = useState([]);
-  console.log(userPlants);
+  // console.log(userPlants);
   useEffect(() => {
     async function getAllUserPlants() {
       if (!user.uid) {
@@ -37,7 +37,12 @@ const MyPlants = () => {
         // doc.data() is never undefined for query doc snapshots
         snapShotArray.push({ docId: doc.id, data: doc.data() });
       });
-      setUserPlants(snapShotArray);
+      const sortedSnapshotArray = snapShotArray.sort((a, b) => {
+        // console.log(a);
+        return b.data.createdAt - a.data.createdAt;
+      });
+      // console.log(sortedSnapshotArray);
+      setUserPlants(sortedSnapshotArray);
     }
     getAllUserPlants();
   }, [user, user.uid]);
