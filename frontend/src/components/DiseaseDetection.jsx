@@ -2,18 +2,22 @@ import { useState } from "react";
 import { useRef } from "react";
 import { ClipLoader } from "react-spinners";
 import { db, storage } from "../util/firebaseConfig";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { useContext } from "react";
 import MainContext from "../store/MainContext";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { formatDiseaseName } from "../pages/MyPlants";
+import Remedies from "./Remedies";
+import Prevention from "./Prevention";
+
 const Form = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const { user } = useContext(MainContext);
-
+  const [remedies, setRemedies] = useState([]);
+  const [prevention, setPrevention] = useState([]);
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -28,7 +32,6 @@ const Form = () => {
   };
 
   const handleUpload = () => {
-    // e.preventDefault();
     if (selectedFile) {
       setLoading(true);
       const formData = new FormData();
@@ -45,23 +48,94 @@ const Form = () => {
           throw new Error("Network response was not ok.");
         })
         .then(async (data) => {
+          let remedyArray;
+          let preventionArray;
+          try {
+            const request = await fetch(
+              "https://api.openai.com/v1/chat/completions",
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  model: "gpt-3.5-turbo",
+                  messages: [
+                    {
+                      role: "user",
+                      content: `Please provide me the arrays of 3 prevention tips someone can take for their plants suffering with the ${data.predicted_disease} disease in brief and nothing else. Thank you!`,
+                    },
+                  ],
+                  temperature: 0.7,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization:
+                    "Bearer " + import.meta.env.VITE_OPENAI_API_KEY,
+                },
+              }
+            );
+            if (!request.ok) {
+              throw new Error("Failed to fetch data from API");
+            }
+            const response = await request.json();
+            const content = response.choices[0].message.content;
+            remedyArray = content.split("\n");
+          } catch (error) {
+            console.log("Error fetching data from API: ", error);
+          }
+
+          //fetching prevention
+          try {
+            const request = await fetch(
+              "https://api.openai.com/v1/chat/completions",
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  model: "gpt-3.5-turbo",
+                  messages: [
+                    {
+                      role: "user",
+                      content: `Please provide me the arrays of 3 prevention tips someone can take for their plants suffering with the ${data.predicted_disease}  diseease in brief and nothing else. Thank you!`,
+                    },
+                  ],
+                  temperature: 0.7,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization:
+                    "Bearer " + import.meta.env.VITE_OPENAI_API_KEY,
+                },
+              }
+            );
+            if (!request.ok) {
+              throw new Error("Failed to fetch data from API");
+            }
+            const response = await request.json();
+            const content = response.choices[0].message.content;
+            preventionArray = content.split("\n");
+            console.log(preventionArray);
+          } catch (error) {
+            console.log("Error fetching data from API: ", error);
+          }
           const storageRef = ref(
             storage,
             `user-plant-images/${user.uid}/${selectedFile.name}`
           );
           const uploadRef = await uploadBytes(storageRef, selectedFile);
           const downloadUrlRef = await getDownloadURL(uploadRef.ref);
-          console.log(downloadUrlRef);
+          // console.log(downloadUrlRef);
+          const formattedName = formatDiseaseName(data.predicted_disease);
           await addDoc(collection(db, "user-plants"), {
             name: selectedFile.name,
             image: downloadUrlRef,
             createdAt: Date.now(),
-            predictedDisease: data.predicted_disease,
+            predictedDisease: formattedName,
             user: user.uid,
+            remedies: remedyArray,
+            preventions: preventionArray,
           });
           if (data && data.predicted_disease) {
-            const formattedName = formatDiseaseName(data.predicted_disease);
             setPrediction(formattedName);
+            setRemedies(remedyArray);
+            setPrevention(preventionArray);
           }
         })
         .catch((error) => {
@@ -109,11 +183,15 @@ const Form = () => {
       </div>
 
       {prediction && (
-        <div className="mt-8 bg-gray-200 p-4 rounded-lg">
-          <h2 className="text-lg font-bold mb-2">Predicted Disease:</h2>
+        <div className="mt-8 py-4 rounded-lg">
+          <h2 className="font-bold font-pop mb-2 text-xl">
+            Predicted Disease:
+          </h2>
           <p>{prediction}</p>
         </div>
       )}
+      <Remedies remedies={remedies} />
+      <Prevention prevention={prevention} />
     </div>
   );
 };
