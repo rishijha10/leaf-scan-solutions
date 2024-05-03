@@ -68,8 +68,7 @@ const Form = () => {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization:
-                    "Bearer " +
-                    "sk-proj-qghiVjvnoedUFsCMr03VT3BlbkFJqnFKqp6p7ctLD0te8IQ9",
+                    "Bearer " + import.meta.env.VITE_OPENAI_API_KEY,
                 },
               }
             );
@@ -102,8 +101,7 @@ const Form = () => {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization:
-                    "Bearer " +
-                    "sk-proj-qghiVjvnoedUFsCMr03VT3BlbkFJqnFKqp6p7ctLD0te8IQ9",
+                    "Bearer " + import.meta.env.VITE_OPENAI_API_KEY,
                 },
               }
             );

@@ -38,10 +38,8 @@ const MyPlants = () => {
         snapShotArray.push({ docId: doc.id, data: doc.data() });
       });
       const sortedSnapshotArray = snapShotArray.sort((a, b) => {
-        // console.log(a);
         return b.data.createdAt - a.data.createdAt;
       });
-      // console.log(sortedSnapshotArray);
       setUserPlants(sortedSnapshotArray);
     }
     getAllUserPlants();
