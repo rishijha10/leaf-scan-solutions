@@ -3,6 +3,9 @@ export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      colors: {
+        beige: "#f9f9e9",
+      },
       screens: {
         "2xl": { max: "1400px" },
         xl3: { max: "1505px" },
@@ -33,6 +36,7 @@ export default {
         inter: ["Inter", "sans-serif"],
         bakbak: ["Bakbak One", "sans-serif"],
         pop: ["Poppins", "sans-serif"],
+        cur: ["Cedarville Cursive", "cursive"],
       },
     },
   },

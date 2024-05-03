@@ -4,7 +4,7 @@ const Home = () => {
   return (
     <div className="flex h-screen w-full">
       <div className="flex flex-col flex-grow">
-        <div className="p-6 bg-white">
+        <div className="px-6 py-4">
           <form className="hidden">
             <label htmlFor="plant-species" className="block">
               Plant Species:
